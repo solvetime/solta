@@ -51,7 +51,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: ec2-user
+        username: ubuntu
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
           docker pull $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
