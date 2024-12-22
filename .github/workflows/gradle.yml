@@ -40,7 +40,8 @@ jobs:
     ## docker build & push
     - name: Docker build
       run: |
-        echo "${{ secrets.DOCKER_TOKEN }}" | base64 --decode | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+       echo "${{ secrets.DOCKER_TOKEN }}" | base64 --decode | docker login -u $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode) --password-stdin
+
         docker build -t app .
         docker tag app $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
         docker push $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
