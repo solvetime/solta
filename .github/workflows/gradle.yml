@@ -14,9 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    ## jdk setting
+    ## load application
     - uses: actions/checkout@v4
+
+     ## jdk setting
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -39,12 +40,12 @@ jobs:
     ## docker build & push
     - name: Docker build
       run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | base64 --decode | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        echo "${{ secrets.DOCKER_TOKEN }}" | base64 --decode | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         docker build -t app .
         docker tag app $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
         docker push $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
 
-    ## docker deploy
+    ## Connect EC2 & docker deploy 
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
