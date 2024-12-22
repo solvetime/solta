@@ -38,3 +38,12 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+jar {
+	enabled = false
+}
+
+bootJar {
+	archiveBaseName.set('solta_server')
+	archiveVersion.set('0.0.1-SNAPSHOT')
+}
