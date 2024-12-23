@@ -13,13 +13,11 @@ import jakarta.persistence.ManyToOne;
 @Entity(name = "problem")
 public class Problem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
     private int id;
 
-    @Column(name = "problem_number")
     private int problemNumber;
 
     @ManyToOne
-    @JoinColumn(name = "level_id", foreignKey = @ForeignKey(name = "fk_problem_level"))
+    @JoinColumn(name = "tier_id", foreignKey = @ForeignKey(name = "fk_problem_level"))
     private Tier tier;
 }
