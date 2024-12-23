@@ -13,8 +13,7 @@ import jakarta.persistence.ManyToOne;
 @Entity(name = "problem_tag")
 public class ProblemTag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "problem_id", foreignKey = @ForeignKey(name = "fk_problemtag_problem"))
