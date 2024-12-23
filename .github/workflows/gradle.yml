@@ -17,19 +17,19 @@ jobs:
     ## load application
     - uses: actions/checkout@v4
 
-     ## jdk setting
+    ## jdk setting
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    ## create application.yml
-    - name: create application-prod.yml
+    ## create application-secret.yml
+    - name: create application-secret.yml
       run: |
         cd ./src/main/resources
-        touch ./application-prod.yml
-        echo "${{ secrets.APPLICATION_PROD }}" | base64 --decode > ./application-prod.yml
+        touch ./application-secret.yml
+        echo "${{ secrets.APPLICATION_SECRET }}" | base64 --decode > ./application-secret.yml
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -46,7 +46,7 @@ jobs:
         docker tag app $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
         docker push $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
 
-    ## Connect EC2 & docker deploy 
+    ## docker deploy to EC2
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
@@ -56,6 +56,6 @@ jobs:
         script: |
           docker pull $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
           docker stop $(docker ps -a -q)
-          docker run -d --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
+          docker run -d --log-driver=syslog -p 8080:8080 $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
           docker rm $(docker ps --filter 'status=exited' -a -q)
           docker image prune -a -f
