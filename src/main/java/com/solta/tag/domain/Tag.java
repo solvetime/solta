@@ -10,10 +10,8 @@ import jakarta.validation.constraints.NotNull;
 @Entity(name = "tag")
 public class Tag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
-    private int id;
+    private Long id;
     @NotNull
-    private String tag_key;
-    @Column(name = "display_name")
+    private String tagKey;
     private String displayName;
 }
