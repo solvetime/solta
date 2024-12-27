@@ -3,7 +3,6 @@ package com.solta.member.controller;
 import com.solta.email.service.MailService;
 import com.solta.member.domain.Member;
 import com.solta.member.dto.response.SignUpResponse;
-import com.solta.member.repository.MemberRepository;
 import com.solta.member.service.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
