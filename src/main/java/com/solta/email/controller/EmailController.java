@@ -2,7 +2,9 @@ package com.solta.email.controller;
 
 
 import com.solta.email.dto.EmailDTO;
+import com.solta.email.dto.VerificationEmailDTO;
 import com.solta.email.service.MailService;
+import com.solta.global.util.RedisUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +24,13 @@ public class EmailController {
     public ResponseEntity<Void> sendEmail(@RequestBody @Valid EmailDTO email) {
         mailService.sendEmail(email);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerificationEmailDTO verificationEmailDTO) {
+        if (mailService.verifyEmail(verificationEmailDTO)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

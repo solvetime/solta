@@ -1,9 +1,12 @@
 package com.solta.email.service;
 
 import com.solta.email.dto.EmailDTO;
-import com.solta.email.exception.MailSendFailureException;
+import com.solta.email.dto.VerificationEmailDTO;
+import com.solta.email.exception.EmailSendFailureException;
+import com.solta.global.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Slf4j
@@ -19,9 +23,11 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 public class MailService {
 
     public static final String MAIL_SUBJECT = "[Solta] 이메일 인증 코드를 발송해 드립니다.";
+    private static final long EXPIRE_PERIOD = 1000L * 60L * 30;
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
+    private final RedisUtil redisUtil;
 
     @Async
     public void sendEmail(EmailDTO to) {
@@ -35,10 +41,23 @@ public class MailService {
             javaMailSender.send(mimeMessage);
 
             log.info("이메일 전송 성공 to={}, message={}", to.email(), randomCode);
+
+            Date date = new Date();
+            redisUtil.setDataExpire(to.email(), randomCode, EXPIRE_PERIOD);
         } catch (MessagingException e) {
             log.info("이메일 전송 실패 to={}, message={}", to.email(), e.getMessage());
-            throw new MailSendFailureException();
+            throw new EmailSendFailureException();
         }
+    }
+
+    @Transactional
+    public boolean verifyEmail(VerificationEmailDTO verificationEmailDTO) {
+        String code = redisUtil.getData(verificationEmailDTO.email());
+
+        if (code.equals(verificationEmailDTO.verificationCode())) {
+            return true;
+        }
+        return false;
     }
 
     private String createRandomCode() {
