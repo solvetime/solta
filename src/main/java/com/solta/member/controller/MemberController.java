@@ -2,6 +2,7 @@ package com.solta.member.controller;
 
 import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberJpaRepository;
+import com.solta.member.service.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 public class MemberController {
 
-    private final MemberJpaRepository memberJpaRepository;
+    private final MemberService memberService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody SignupDTO signupDTO) {
-        memberJpaRepository.save(Member.builder()
-                .name(signupDTO.name())
-                .email(signupDTO.email())
-                .password(signupDTO.password())
-                .build());
+        memberService.signUp(signupDTO);
         return ResponseEntity.ok().build();
     }
 }
