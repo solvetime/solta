@@ -2,7 +2,6 @@ package com.solta.email.service;
 
 import com.solta.email.dto.EmailDTO;
 import com.solta.email.exception.EmailSendFailureException;
-import com.solta.global.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Date;
@@ -27,7 +26,6 @@ public class MailService {
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
-    private final RedisUtil redisUtil;
 
     @Async
     public void sendEmail(EmailDTO to) {
@@ -41,9 +39,6 @@ public class MailService {
             javaMailSender.send(mimeMessage);
 
             log.info("이메일 전송 성공 to={}, message={}", to.email(), randomCode);
-
-            Date date = new Date();
-            redisUtil.setDataExpire(to.email(), randomCode, EXPIRE_PERIOD);
         } catch (MessagingException e) {
             log.info("이메일 전송 실패 to={}, message={}", to.email(), e.getMessage());
             throw new EmailSendFailureException();
@@ -53,7 +48,7 @@ public class MailService {
     @Transactional
     public boolean verifyEmail(String email, String authCode) {
         try {
-            String code = redisUtil.getData(email);
+            String code = "";
             return authCode.equals(code);
         } catch (Exception e) {
             throw new NoSuchElementException();
