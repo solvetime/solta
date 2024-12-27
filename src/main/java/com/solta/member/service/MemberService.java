@@ -14,14 +14,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final EncryptUtils encryptUtils;
 
-    public Long signUp(SignupDTO signupDTO) {
+    public Member signUp(SignupDTO signupDTO) {
         String encryptPassword = encryptUtils.encrypt(signupDTO.password());
 
-        Member saveMember = memberRepository.save(Member.builder()
+        return memberRepository.save(Member.builder()
                 .name(signupDTO.name())
                 .email(signupDTO.email())
                 .password(encryptPassword)
                 .build());
-        return saveMember.getId();
     }
 }

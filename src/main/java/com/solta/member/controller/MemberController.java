@@ -1,7 +1,7 @@
 package com.solta.member.controller;
 
 import com.solta.member.domain.Member;
-import com.solta.member.repository.MemberJpaRepository;
+import com.solta.member.dto.response.SignUpResponse;
 import com.solta.member.service.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Long> signup(@RequestBody SignupDTO signupDTO) {
-        Long memberId = memberService.signUp(signupDTO);
-        return ResponseEntity.ok().body(memberId);
+    public ResponseEntity<SignUpResponse> signup(@RequestBody SignupDTO signupDTO) {
+        Member member = memberService.signUp(signupDTO);
+        return ResponseEntity.ok(SignUpResponse.from(member));
     }
 }
