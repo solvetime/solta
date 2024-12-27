@@ -20,8 +20,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupDTO signupDTO) {
-        memberService.signUp(signupDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> signup(@RequestBody SignupDTO signupDTO) {
+        Long memberId = memberService.signUp(signupDTO);
+        return ResponseEntity.ok().body(memberId);
     }
 }
