@@ -2,12 +2,10 @@ package com.solta.email.controller;
 
 
 import com.solta.email.dto.EmailDTO;
-import com.solta.email.dto.VerificationEmailDTO;
+import com.solta.email.dto.AuthCodeEmailDTO;
 import com.solta.email.service.MailService;
-import com.solta.global.util.RedisUtil;
 import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberRepository;
-import com.solta.member.service.MemberService;
 import jakarta.validation.Valid;
 import java.util.NoSuchElementException;
 import lombok.AllArgsConstructor;
@@ -42,8 +40,8 @@ public class EmailController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerificationEmailDTO verificationEmailDTO) {
-        if (mailService.verifyEmail(verificationEmailDTO)) {
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
+        if (mailService.verifyEmail(authCodeEmailDTO.email(), authCodeEmailDTO.authCode())) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();

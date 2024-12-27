@@ -1,12 +1,12 @@
 package com.solta.email.service;
 
 import com.solta.email.dto.EmailDTO;
-import com.solta.email.dto.VerificationEmailDTO;
 import com.solta.email.exception.EmailSendFailureException;
 import com.solta.global.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +51,13 @@ public class MailService {
     }
 
     @Transactional
-    public boolean verifyEmail(VerificationEmailDTO verificationEmailDTO) {
-        String code = redisUtil.getData(verificationEmailDTO.email());
-
-        if (code.equals(verificationEmailDTO.verificationCode())) {
-            return true;
+    public boolean verifyEmail(String email, String authCode) {
+        try {
+            String code = redisUtil.getData(email);
+            return authCode.equals(code);
+        } catch (Exception e) {
+            throw new NoSuchElementException();
         }
-        return false;
     }
 
     private String createRandomCode() {
