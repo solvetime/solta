@@ -74,3 +74,6 @@ spring:
           timeout: 5000
           starttls:
             enable: true
+  solved:
+    api:
+      url: '${custom.solved.api.url}'
