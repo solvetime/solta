@@ -1,9 +1,9 @@
 package com.solta.email.controller;
 
 
-import com.solta.email.dto.EmailDTO;
-import com.solta.email.dto.AuthCodeEmailDTO;
-import com.solta.email.service.MailService;
+import com.solta.email.dto.request.EmailDTO;
+import com.solta.email.dto.request.AuthCodeEmailDTO;
+import com.solta.email.service.EmailService;
 import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberRepository;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/email")
 public class EmailController {
 
-    private final MailService mailService;
+    private final EmailService emailService;
     private final MemberRepository memberRepository;
 
     @PostMapping("/exists")
@@ -35,13 +35,13 @@ public class EmailController {
 
     @PostMapping("/send")
     public ResponseEntity<Void> sendEmail(@RequestBody @Valid EmailDTO email) {
-        mailService.sendEmail(email);
+        emailService.sendEmail(email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify")
     public ResponseEntity<Void> verifyEmail(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
-        if (mailService.verifyEmail(authCodeEmailDTO.email(), authCodeEmailDTO.authCode())) {
+        if (emailService.verifyEmail(authCodeEmailDTO.email(), authCodeEmailDTO.authCode())) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
