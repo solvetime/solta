@@ -1,7 +1,5 @@
-package com.solta.problemlog.dto.response;
+package com.solta.problem.dto;
 
-import com.solta.problemlog.dto.ProblemTagDTO;
-import com.solta.problemlog.dto.ProblemTitlesTranslatedDTO;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;

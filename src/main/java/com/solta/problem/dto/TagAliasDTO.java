@@ -1,4 +1,4 @@
-package com.solta.problemlog.dto;
+package com.solta.problem.dto;
 
 import lombok.Getter;
 import lombok.Setter;
