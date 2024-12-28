@@ -1,7 +1,7 @@
 package com.solta.problem.service;
 
 import com.solta.problem.dto.ProblemResponseDTO;
-import com.solta.problemlog.util.ProblemApiClient;
+import com.solta.problem.util.ProblemApiClient;
 import org.springframework.stereotype.Service;
 
 @Service

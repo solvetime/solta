@@ -1,6 +1,6 @@
-package com.solta.problemlog.util;
+package com.solta.problem.util;
 
-import com.solta.problemlog.dto.response.ProblemResponseDTO;
+import com.solta.problem.dto.ProblemResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
