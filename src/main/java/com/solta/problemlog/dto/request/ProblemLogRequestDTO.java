@@ -10,6 +10,6 @@ public class ProblemLogRequestDTO {
     private Integer problemNumber;
     private String title;
     private List<String> tags;
-    private String tier;
+    private int tier;
     private Integer solveDuration;
 }
