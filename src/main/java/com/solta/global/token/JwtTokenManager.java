@@ -2,6 +2,7 @@ package com.solta.global.token;
 
 import com.solta.auth.dto.AuthInfo;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -33,6 +34,17 @@ public class JwtTokenManager {
         return Jwts.builder()
                 .claim("email", authInfo.email())
                 .claim("name", authInfo.name())
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(signingKey)
+                .compact();
+    }
+
+    public String createRefreshToken(AuthInfo authInfo) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+
+        return Jwts.builder()
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(signingKey)
