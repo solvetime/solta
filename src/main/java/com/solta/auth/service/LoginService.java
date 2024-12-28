@@ -17,6 +17,6 @@ public class LoginService {
 
     public AuthInfo login(LoginRequest loginRequest) {
         Member member = memberRepository.findByEmail(loginRequest.email());
-        return new AuthInfo(member.getEmail(), member.getName());
+        return new AuthInfo(member.getId(), member.getEmail(), member.getName());
     }
 }
