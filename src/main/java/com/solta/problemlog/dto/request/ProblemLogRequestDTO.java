@@ -1,6 +1,5 @@
 package com.solta.problemlog.dto.request;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +7,5 @@ import lombok.Setter;
 @Setter
 public class ProblemLogRequestDTO {
     private Integer problemNumber;
-    private String title;
-    private List<String> tags;
-    private int tier;
     private Integer solveDuration;
 }
