@@ -1,6 +1,10 @@
 package com.solta.global.token;
 
 import com.solta.auth.dto.AuthInfo;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -33,6 +37,7 @@ public class JwtTokenManager {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
+                .claim("id", authInfo.id())
                 .claim("email", authInfo.email())
                 .claim("name", authInfo.name())
                 .issuedAt(now)
@@ -50,5 +55,48 @@ public class JwtTokenManager {
                 .expiration(validity)
                 .signWith(signingKey)
                 .compact();
+    }
+
+    public String getPayload(String token) {
+        return Jwts.parser()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getPayload()
+                .getSubject();
+    }
+
+    public AuthInfo getParsedClaims(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            Long id = e.getClaims().get("id", Long.class);
+            String email = e.getClaims().get("email", String.class);
+            String name = e.getClaims().get("name", String.class);
+            return new AuthInfo(id, email, name);
+        }
+
+        Long id = claims.get("id", Long.class);
+        String email = claims.get("email", String.class);
+        String name = claims.get("name", String.class);
+        return new AuthInfo(id, email, name);
+    }
+
+    public boolean isValid(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token);
+
+            return !claimsJws.getPayload().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
