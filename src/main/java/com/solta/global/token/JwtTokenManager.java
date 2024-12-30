@@ -59,9 +59,9 @@ public class JwtTokenManager {
 
     public String getPayload(String token) {
         return Jwts.parser()
-                .setSigningKey(signingKey)
+                .verifyWith((SecretKey) signingKey)
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
     }
@@ -70,9 +70,9 @@ public class JwtTokenManager {
         Claims claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(signingKey)
+                    .verifyWith((SecretKey) signingKey)
                     .build()
-                    .parseClaimsJws(token)
+                    .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
             Long id = e.getClaims().get("id", Long.class);
