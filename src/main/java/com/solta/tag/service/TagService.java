@@ -5,6 +5,8 @@ import com.solta.tag.dto.TagDisplayName;
 import com.solta.tag.dto.TagItem;
 import com.solta.tag.dto.response.TagResponse;
 import com.solta.tag.repository.TagRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void updateTags(){
         TagResponse tagResponse = fetchTagsFromApi();
