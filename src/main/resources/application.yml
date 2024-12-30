@@ -19,7 +19,7 @@ spring:
     password: '${custom.db.password}'
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         default_batch_fetch_size: 1000
