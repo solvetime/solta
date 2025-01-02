@@ -4,6 +4,8 @@ import com.solta.auth.dto.AuthInfo;
 import com.solta.auth.dto.LoginRequest;
 import com.solta.auth.service.LoginService;
 import com.solta.auth.service.RefreshTokenService;
+import com.solta.global.common.response.ApiResponse;
+import com.solta.global.common.response.HttpMessage;
 import com.solta.global.token.CurrentUser;
 import com.solta.global.token.JwtTokenExtractor;
 import com.solta.global.token.JwtTokenManager;
@@ -32,7 +34,7 @@ public class LoginController {
     private final JwtTokenExtractor jwtTokenExtractor;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest loginRequest) {
         AuthInfo authInfo = loginService.login(loginRequest);
         String accessToken = jwtTokenManager.createAccessToken(authInfo);
         String refreshToken = jwtTokenManager.createRefreshToken();
@@ -41,11 +43,13 @@ public class LoginController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .header("refresh-token", "Bearer " + refreshToken)
-                .build();
+                .body(ApiResponse.builder()
+                        .message(HttpMessage.SUCCESS.getMsg())
+                        .build());
     }
 
     @GetMapping("/refresh")
-    public ResponseEntity<Void> refresh(HttpServletRequest request, @CurrentUser AuthInfo authInfo) {
+    public ResponseEntity<ApiResponse<Object>> refresh(HttpServletRequest request, @CurrentUser AuthInfo authInfo) {
         validateExistHeader(request);
         Long memberId = authInfo.id();
         Enumeration<String> headers = request.getHeaders("refresh-token");
@@ -55,9 +59,11 @@ public class LoginController {
 
         String accessToken = jwtTokenManager.createAccessToken(authInfo);
 
-        return ResponseEntity.noContent()
+        return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .build();
+                .body(ApiResponse.builder()
+                        .message(HttpMessage.SUCCESS.getMsg())
+                        .build());
     }
 
     private void validateExistHeader(HttpServletRequest request) {
