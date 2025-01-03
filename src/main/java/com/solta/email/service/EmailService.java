@@ -1,6 +1,7 @@
 package com.solta.email.service;
 
 import com.solta.email.dto.request.EmailDTO;
+import com.solta.email.dto.response.EmailWithAuthCodeDTO;
 import com.solta.email.entity.EmailAuth;
 import com.solta.email.exception.EmailSendFailureException;
 import com.solta.email.repository.EmailAuthRepository;
@@ -9,6 +10,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,15 +27,18 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @RequiredArgsConstructor
 public class EmailService {
 
-    public static final String MAIL_SUBJECT = "[Solta] 이메일 인증 코드를 발송해 드립니다.";
-    private static final long EXPIRE_PERIOD = 30;
+    private static final String MAIL_SUBJECT = "[Solta] 이메일 인증 코드를 발송해 드립니다.";
+    private static final long EXPIRE_MINUTE = 30;
+    private static final int RANDOM_CODE_LENGTH = 6;
+    private static final int ALPHABET_PROBABILITY = 24;
+    private static final int TOTAL_PROBABILITY = 36;
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
     private final EmailAuthRepository emailAuthRepository;
 
     @Async
-    public void sendEmail(EmailDTO to) {
+    public CompletableFuture<EmailWithAuthCodeDTO> sendEmail(EmailDTO to) {
         String randomAuthCode = createRandomCode();
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -47,12 +52,13 @@ public class EmailService {
             emailAuthRepository.save(EmailAuth.builder()
                     .email(to.email())
                     .authCode(randomAuthCode)
-                    .expireDateTime(LocalDateTime.now().plusMinutes(EXPIRE_PERIOD))
+                    .expireDateTime(LocalDateTime.now().plusMinutes(EXPIRE_MINUTE))
                     .build());
         } catch (MessagingException e) {
-            log.info("이메일 전송 실패 to={}, message={}", to.email(), e.getMessage());
             throw new EmailSendFailureException();
         }
+
+        return CompletableFuture.completedFuture(new EmailWithAuthCodeDTO(to.email(), randomAuthCode));
     }
 
     @Transactional
@@ -64,7 +70,7 @@ public class EmailService {
 
         String code = authEmail.get().getAuthCode();
         LocalDateTime expire = authEmail.get().getExpireDateTime();
-        if (expire.isAfter(LocalDateTime.now())) {
+        if (expire.isBefore(LocalDateTime.now())) {
             return false;
         }
 
@@ -82,9 +88,9 @@ public class EmailService {
         String number = "1234567890";
         StringBuilder sb = new StringBuilder();
 
-        for (int cnt = 0; cnt < 6; cnt++) {
-            int randomNumber = ThreadLocalRandom.current().nextInt(36);
-            if (randomNumber < 24) {
+        for (int cnt = 0; cnt < RANDOM_CODE_LENGTH; cnt++) {
+            int randomNumber = ThreadLocalRandom.current().nextInt(TOTAL_PROBABILITY);
+            if (randomNumber < ALPHABET_PROBABILITY) {
                 int idx = ThreadLocalRandom.current().nextInt(alphabet.length());
                 sb.append(alphabet.charAt(idx));
                 continue;

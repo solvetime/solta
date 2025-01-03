@@ -1,5 +1,6 @@
 package com.solta.auth;
 
+import com.solta.global.token.JwtTokenExtractor;
 import com.solta.global.token.JwtTokenManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,11 +18,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AuthInterceptor implements HandlerInterceptor {
 
     private final JwtTokenManager jwtTokenManager;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Enumeration<String> headers = request.getHeaders(HttpHeaders.AUTHORIZATION);
-        String token = extract(headers);
+        String token = jwtTokenExtractor.extract(headers);
 
         if (jwtTokenManager.isValid(token)) {
             return true;
@@ -30,21 +32,5 @@ public class AuthInterceptor implements HandlerInterceptor {
         log.info("no token" + request.getRequestURI());
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return false;
-    }
-
-    private String extract(Enumeration<String> headers) {
-        while (headers.hasMoreElements()) {
-            String value = headers.nextElement();
-            if (value.toLowerCase().startsWith("Bearer".toLowerCase())) {
-                String authValue = value.substring("Bearer".length()).trim();
-
-                int comma = authValue.indexOf(',');
-                if (comma > 0) {
-                    authValue = authValue.substring(0, comma);
-                }
-                return authValue;
-            }
-        }
-        return null;
     }
 }

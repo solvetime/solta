@@ -1,7 +1,7 @@
 package com.solta.problemlog.service;
 
 import com.solta.member.domain.Member;
-import com.solta.member.repository.MemberJpaRepository;
+import com.solta.member.repository.MemberRepository;
 import com.solta.problem.domain.Problem;
 import com.solta.problem.dto.ProblemResponseDTO;
 import com.solta.problem.repository.ProblemRepository;
@@ -20,10 +20,10 @@ public class ProblemLogService {
     private final ProblemLogRepository problemLogRepository;
     private final ProblemRepository problemRepository;
     private final TierRepository tierRepository;
-    private final MemberJpaRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public ProblemLogService(ProblemLogRepository problemLogRepository, ProblemRepository problemRepository,
-                             TierRepository tierRepository, MemberJpaRepository memberRepository) {
+                             TierRepository tierRepository, MemberRepository memberRepository) {
         this.problemLogRepository = problemLogRepository;
         this.problemRepository = problemRepository;
         this.tierRepository = tierRepository;
