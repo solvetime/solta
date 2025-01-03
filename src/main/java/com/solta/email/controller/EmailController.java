@@ -5,8 +5,6 @@ import com.solta.email.dto.request.EmailDTO;
 import com.solta.email.dto.request.AuthCodeEmailDTO;
 import com.solta.email.dto.response.EmailWithAuthCodeDTO;
 import com.solta.email.service.EmailService;
-import com.solta.global.common.response.ApiResponse;
-import com.solta.global.common.response.HttpMessage;
 import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberRepository;
 import jakarta.validation.Valid;
@@ -27,47 +25,32 @@ public class EmailController {
     private final MemberRepository memberRepository;
 
     @PostMapping("/exists")
-    public ResponseEntity<ApiResponse<EmailDTO>> existsEmail(@Valid @RequestBody EmailDTO email) {
+    public ResponseEntity<EmailDTO> existsEmail(@Valid @RequestBody EmailDTO email) {
         Optional<Member> byEmail = memberRepository.findByEmail(email.email());
 
         if (byEmail.isEmpty()) {
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.<EmailDTO>builder()
-                            .message(HttpMessage.ERROR.getMsg())
-                            .data(email)
-                            .build());
+                    .body(email);
         }
 
-        return ResponseEntity.ok(ApiResponse.<EmailDTO>builder()
-                .message(HttpMessage.SUCCESS.getMsg())
-                .data(email)
-                .build());
+        return ResponseEntity.ok(email);
     }
 
     @PostMapping("/send")
-    public ResponseEntity<ApiResponse<EmailWithAuthCodeDTO>> sendEmail(@Valid @RequestBody EmailDTO email) {
+    public ResponseEntity<EmailWithAuthCodeDTO> sendEmail(@Valid @RequestBody EmailDTO email) {
         EmailWithAuthCodeDTO result = emailService.sendEmail(email).join();// 이거 해결 ㄱ
 
-        return ResponseEntity.ok(ApiResponse.<EmailWithAuthCodeDTO>builder()
-                .message(HttpMessage.SUCCESS.getMsg())
-                .data(result)
-                .build());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<EmailWithAuthCodeDTO>> verifyEmail(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
+    public ResponseEntity<EmailWithAuthCodeDTO> verifyEmail(@Valid @RequestBody AuthCodeEmailDTO authCodeEmailDTO) {
         EmailWithAuthCodeDTO responseData = new EmailWithAuthCodeDTO(authCodeEmailDTO.email(), authCodeEmailDTO.authCode());
 
         if (emailService.verifyEmail(authCodeEmailDTO.email(), authCodeEmailDTO.authCode())) {
-            return ResponseEntity.ok(ApiResponse.<EmailWithAuthCodeDTO>builder()
-                    .message(HttpMessage.SUCCESS.getMsg())
-                    .data(responseData)
-                    .build());
+            return ResponseEntity.ok(responseData);
         }
         return ResponseEntity.badRequest()
-                .body(ApiResponse.<EmailWithAuthCodeDTO>builder()
-                    .message(HttpMessage.ERROR.getMsg())
-                    .data(responseData)
-                    .build());
+                .body(responseData);
     }
 }

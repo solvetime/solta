@@ -5,6 +5,7 @@ import com.solta.member.controller.SignUpDTO;
 import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberRepository;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,11 @@ public class MemberService {
     }
 
     public boolean isExistEmail(String email) {
-        try {
-            memberRepository.findByEmail(email);
-            return true;
-        } catch (NoSuchElementException e) {
+        Optional<Member> byEmail = memberRepository.findByEmail(email);
+        if (byEmail.isEmpty()) {
             return false;
         }
+
+        return true;
     }
 }
