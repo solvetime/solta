@@ -1,10 +1,8 @@
 package com.solta.global.token;
 
-import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -16,6 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenManager jwtTokenManager;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -30,19 +29,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
             throw new NoSuchElementException();
         }
 
-        return jwtTokenManager.getParsedClaims(extract(token));
-    }
-
-    private String extract(String value) {
-        if (value.toLowerCase().startsWith("Bearer".toLowerCase())) {
-            String authValue = value.substring("Bearer".length()).trim();
-
-            int comma = authValue.indexOf(',');
-            if (comma > 0) {
-                authValue = authValue.substring(0, comma);
-            }
-            return authValue;
-        }
-        return null;
+        return jwtTokenManager.getParsedClaims(jwtTokenExtractor.extract(token));
     }
 }

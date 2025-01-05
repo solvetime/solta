@@ -5,6 +5,7 @@ import com.solta.member.domain.Member;
 import com.solta.member.dto.response.SignUpResponse;
 import com.solta.member.service.MemberService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +27,11 @@ public class MemberController {
         if (emailService.verifyEmail(signUpDTO.email(), signUpDTO.authCode()) &&
                 !memberService.isExistEmail(signUpDTO.email())) {
             Member member = memberService.signUp(signUpDTO);
-            return ResponseEntity.ok(SignUpResponse.from(member));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new SignUpResponse(member.getId(), member.getEmail()));
         }
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 }

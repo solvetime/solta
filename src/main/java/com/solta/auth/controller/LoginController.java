@@ -5,6 +5,7 @@ import com.solta.auth.dto.LoginRequest;
 import com.solta.auth.service.LoginService;
 import com.solta.auth.service.RefreshTokenService;
 import com.solta.global.token.CurrentUser;
+import com.solta.global.token.JwtTokenExtractor;
 import com.solta.global.token.JwtTokenManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ public class LoginController {
     private final LoginService loginService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenManager jwtTokenManager;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -47,31 +49,15 @@ public class LoginController {
         validateExistHeader(request);
         Long memberId = authInfo.id();
         Enumeration<String> headers = request.getHeaders("refresh-token");
-        String refreshToken = extract(headers);
+        String refreshToken = jwtTokenExtractor.extract(headers);
 
         refreshTokenService.matches(refreshToken, memberId);
 
         String accessToken = jwtTokenManager.createAccessToken(authInfo);
 
-        return ResponseEntity.noContent()
+        return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .build();
-    }
-
-    private String extract(Enumeration<String> headers) {
-        while (headers.hasMoreElements()) {
-            String value = headers.nextElement();
-            if (value.toLowerCase().startsWith("Bearer".toLowerCase())) {
-                String authValue = value.substring("Bearer".length()).trim();
-
-                int comma = authValue.indexOf(',');
-                if (comma > 0) {
-                    authValue = authValue.substring(0, comma);
-                }
-                return authValue;
-            }
-        }
-        return null;
     }
 
     private void validateExistHeader(HttpServletRequest request) {

@@ -53,6 +53,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ubuntu
         key: ${{ secrets.PRIVATE_KEY }}
+        debug: true
         script: |
           docker pull $(echo "${{ secrets.DOCKER_USERNAME }}" | base64 --decode)/solta:latest
           docker stop $(docker ps -a -q)
