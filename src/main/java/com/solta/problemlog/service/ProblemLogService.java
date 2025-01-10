@@ -11,6 +11,7 @@ import com.solta.problemlog.repository.ProblemLogRepository;
 import com.solta.tier.domain.Tier;
 import com.solta.tier.repository.TierRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +54,12 @@ public class ProblemLogService {
                             .tier(tier)
                             .build();
                 });
-        return problemRepository.save(problem);
+
+        try{
+            return problemRepository.save(problem);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("이미 등록되어 있는 문제입니다", e);
+        }
     }
 
     private void storeProblemLog(ProblemLogRequestDTO problemLogRequestDTO, Problem problem, Long memberId){
