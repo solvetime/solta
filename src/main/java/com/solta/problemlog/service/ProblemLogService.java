@@ -40,7 +40,7 @@ public class ProblemLogService {
         storeProblemLog(problemLogRequestDTO, problem, memberId);
     }
 
-    private Problem storeProblem(ProblemLogRequestDTO problemLogRequestDTO, ProblemResponseDTO problemDetails){
+    Problem storeProblem(ProblemLogRequestDTO problemLogRequestDTO, ProblemResponseDTO problemDetails){
         Problem problem = problemRepository.findProblemByProblemNumber(problemLogRequestDTO.getProblemNumber())
                 .orElseGet(() -> {
                     int tierId = problemDetails.getLevel();

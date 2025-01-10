@@ -11,6 +11,16 @@ import jakarta.validation.constraints.NotNull;
 public class Tier {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @NotNull
     private String name;
+
+    public Tier(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Tier() {
+
+    }
 }
