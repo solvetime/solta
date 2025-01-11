@@ -27,8 +27,7 @@ public class ProblemLogController {
     @PostMapping("/register")
     public ResponseEntity<Void> registerProblemLog(@RequestBody ProblemLogRequestDTO problemLogRequestDTO){
         Long dummyMemberId = 1L;
-        ProblemResponseDTO problemDetails = problemService.getProblemDetails(problemLogRequestDTO.getProblemNumber());
-        problemLogService.registerProblemLog(problemLogRequestDTO, problemDetails, dummyMemberId);
+        problemLogService.registerProblemLog(problemLogRequestDTO, dummyMemberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
