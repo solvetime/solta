@@ -4,6 +4,7 @@ import com.solta.problem.dto.ProblemResponseDTO;
 import com.solta.problem.service.ProblemService;
 import com.solta.problemlog.dto.request.ProblemLogRequestDTO;
 import com.solta.problemlog.service.ProblemLogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/problemLog")
 public class ProblemLogController {
-    private ProblemLogService problemLogService;
-    private ProblemService problemService;
-
-    public ProblemLogController(ProblemLogService problemLogService, ProblemService problemService) {
-        this.problemLogService = problemLogService;
-        this.problemService = problemService;
-    }
+    private final ProblemLogService problemLogService;
 
     @PostMapping("/register")
     public ResponseEntity<Void> registerProblemLog(@RequestBody ProblemLogRequestDTO problemLogRequestDTO){
