@@ -64,7 +64,7 @@ public class ProblemLogService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버가 존재하지 않음"));
 
         ProblemLog problemLog = ProblemLog.builder()
-                .solvedDuration(problemLogRequestDTO.getSolveDuration())
+                .solvedDuration(problemLogRequestDTO.getSolveDurationInSeconds())
                 .problem(problem)
                 .member(member)
                 .build();
