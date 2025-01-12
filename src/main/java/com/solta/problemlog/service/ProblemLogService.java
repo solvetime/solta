@@ -4,13 +4,17 @@ import com.solta.member.domain.Member;
 import com.solta.member.repository.MemberRepository;
 import com.solta.problem.domain.Problem;
 import com.solta.problem.dto.ProblemResponseDTO;
+import com.solta.problem.dto.ProblemTagDTO;
 import com.solta.problem.repository.ProblemRepository;
 import com.solta.problem.service.ProblemService;
 import com.solta.problemlog.domain.ProblemLog;
 import com.solta.problemlog.dto.request.ProblemLogRequestDTO;
 import com.solta.problemlog.repository.ProblemLogRepository;
+import com.solta.tag.domain.Tag;
+import com.solta.tag.repository.TagRepository;
 import com.solta.tier.domain.Tier;
 import com.solta.tier.repository.TierRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +30,7 @@ public class ProblemLogService {
     private final TierRepository tierRepository;
     private final MemberRepository memberRepository;
     private final ProblemService problemService;
+    private final TagRepository tagRepository;
 
     @Transactional
     public void registerProblemLog(ProblemLogRequestDTO problemLogRequestDTO, Long memberId){
@@ -45,10 +50,19 @@ public class ProblemLogService {
                     Tier tier = tierRepository.findById(tierId)
                             .orElseThrow(() -> new IllegalArgumentException("티어가 존재하지 않음"));
 
-                    return Problem.builder()
+                    Problem problemBuilt =  Problem.builder()
                             .problemNumber(problemLogRequestDTO.getProblemNumber())
                             .tier(tier)
                             .build();
+
+                    problemDetails.getTags().forEach(problemTagDTO -> {
+                        Tag tag = tagRepository.findTagByTagKeyIs(problemTagDTO.getKey())
+                                .orElseThrow(() -> new IllegalArgumentException("테이블에 해당 태그가 존재하지 않음"));
+
+                        problemBuilt.addTag(tag);
+                    });
+
+                    return problemBuilt;
                 });
 
         try{

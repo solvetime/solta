@@ -4,6 +4,7 @@ import com.solta.problem.dto.ProblemResponseDTO;
 import com.solta.problem.service.ProblemService;
 import com.solta.problemlog.dto.request.ProblemLogRequestDTO;
 import com.solta.problemlog.service.ProblemLogService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class ProblemLogController {
     private final ProblemLogService problemLogService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerProblemLog(@RequestBody ProblemLogRequestDTO problemLogRequestDTO){
+    public ResponseEntity<Void> registerProblemLog(@Valid @RequestBody ProblemLogRequestDTO problemLogRequestDTO){
         Long dummyMemberId = 1L;
         problemLogService.registerProblemLog(problemLogRequestDTO, dummyMemberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -22,4 +22,9 @@ public class ProblemTag {
     @ManyToOne
     @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_problemtag_tag"))
     private Tag tag;
+
+    public ProblemTag(Problem problem, Tag tag) {
+        this.problem = problem;
+        this.tag = tag;
+    }
 }
